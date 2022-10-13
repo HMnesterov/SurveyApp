@@ -38,6 +38,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'Logic.apps.LogicConfig',
+'django_admin_shell',
 ]
 
 MIDDLEWARE = [
