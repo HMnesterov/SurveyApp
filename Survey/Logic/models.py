@@ -15,11 +15,11 @@ class Question(models.Model):
 
 
 class Answer(models.Model):
-    answer_text = models.CharField(
+    text = models.CharField(
         max_length=30
     )
     is_true = models.BooleanField()
-    question = models.ForeignKey(Question, on_delete=models.CASCADE)
+    question = models.ForeignKey(Question, on_delete=models.CASCADE, related_name='choice_set')
 
 
 class Submission(models.Model):

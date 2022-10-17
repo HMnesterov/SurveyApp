@@ -1,8 +1,6 @@
 from django import forms
-from django.dispatch import receiver
 
-from .models import Answer, Question, Survey, Submission
-
+from .models import Answer, Submission, Survey
 
 class SurveyForm(forms.Form):
     email = forms.EmailField()
@@ -17,3 +15,19 @@ class SurveyForm(forms.Form):
             self.fields[f"question_{question.id}"] = forms.ChoiceField(widget=forms.RadioSelect, choices=choices)
             self.fields[f"question_{question.id}"].label = question.text
 
+    def save(self):
+        data = self.cleaned_data
+        submission = Submission(survey=self.survey, participant_email=data["email"])
+        submission.save()
+        for question in self.survey.question_set.all():
+            choice = Answer.objects.get(pk=data[f"question_{question.id}"])
+            submission.answer.add(choice)
+
+        submission.save()
+        return submission
+
+
+class SurveyCreateForm(forms.ModelForm):
+    class Meta:
+        model = Submission
+        fields = '__all__'

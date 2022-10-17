@@ -1,11 +1,13 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 
 from django.shortcuts import get_object_or_404
+from django.urls import reverse
+
 from .models import Survey
-from .forms import SurveyForm
+from .forms import SurveyForm, SurveyCreateForm
 
 
-def index(request):
+def main_page(request):
     return render(request, "base.html")
 
 
@@ -13,8 +15,47 @@ def show_survey(request, id=None):
     survey = get_object_or_404(Survey, pk=id)
     form = SurveyForm(survey)
 
+    if request.method == "POST":
+        form = SurveyForm(survey, request.POST)
+        if form.is_valid():
+            form.save()
+            questions = survey.question_set.all()
+            vichit_digit = 0
+            count = 0
+            user_right_vary = 0
+            for question in questions:
+                count += 1
+                all_answ = question.choice_set.all()
+                res = int(form.cleaned_data[f'question_{count}'])
+                right_vary = [answer for answer in all_answ if answer.is_true]
+                user_vary = all_answ[res - 1 - vichit_digit]
+
+                if right_vary[0] == user_vary:
+                    user_right_vary += 1
+                vichit_digit += len(all_answ)
+
+
+            return redirect('results', user_right_vary=user_right_vary, count=count)
+
     context = {
         "survey": survey,
         "form": form,
     }
-    return render(request, "base.html", context)
+    return render(request, "survey.html", context)
+
+
+
+def show_test_results(request, user_right_vary, count):
+    return render(request, 'results.html', {'right': user_right_vary, 'all': count})
+
+
+
+def test(request):
+    form = SurveyCreateForm()
+    if request.method == "POST":
+        form = SurveyCreateForm(request.POST)
+        if form.is_valid():
+            form.save()
+
+
+    return render(request, 'test.html', {'form': form})
