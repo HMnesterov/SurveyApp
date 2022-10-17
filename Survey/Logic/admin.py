@@ -26,7 +26,7 @@ class QuestionAdmin(admin.ModelAdmin):
 
 
 class SubmissionAdmin(admin.ModelAdmin):
-    list_display = ('participant_email', 'status')
+    list_display = ('status',)
 
 
 admin.site.register(Survey, SurveyAdmin)

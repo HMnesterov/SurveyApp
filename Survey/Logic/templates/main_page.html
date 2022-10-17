@@ -1,10 +1,25 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <title>$Title$</title>
-</head>
-<body>
-$END$
-</body>
-</html>
+{% extends 'base.html' %}
+{% block content %}
+
+<ul class="list-group">
+    <li class="list-group-item active" aria-current="true">An active item</li>
+    {% for survey in surveys %}
+
+  <li class="list-group-item"><a href="{{survey.return_link}}">Тест {{survey}}</a></li>
+{% endfor %}
+</ul>
+
+
+{% endblock %}
+{% block pagination %}
+
+<nav aria-label="Page navigation example">
+  <ul class="pagination">
+      {% for p in page_obj.paginator.page_range %}
+    <li class="page-item"><a class="page-link" href="?page={{ p }}">{{ p }}</a></li>
+      {% endfor %}
+  </ul>
+</nav>
+
+
+{% endblock %}

@@ -1,10 +1,17 @@
 from django.db import models
-
-
+from django.urls import reverse
 
 
 class Survey(models.Model):
     title = models.CharField(max_length=145)
+
+
+    def return_link(self):
+        return reverse('show_survey', args=[self.pk])
+
+
+    def __str__(self):
+        return self.title
 
 
 class Question(models.Model):
@@ -24,7 +31,6 @@ class Answer(models.Model):
 
 class Submission(models.Model):
     survey = models.ForeignKey(Survey, on_delete=models.CASCADE)
-    participant_email = models.EmailField(max_length=255)
     answer = models.ManyToManyField(Answer)
     status = models.CharField(max_length=255)
 

@@ -1,9 +1,10 @@
 from django import forms
+from django.contrib.auth.forms import UserCreationForm
+from django.contrib.auth.models import User
 
-from .models import Answer, Submission, Survey
+from .models import Answer, Submission
 
 class SurveyForm(forms.Form):
-    email = forms.EmailField()
     question_1 = forms.ChoiceField(widget=forms.RadioSelect, choices=())
 
     def __init__(self, survey, *args, **kwargs):
@@ -17,7 +18,7 @@ class SurveyForm(forms.Form):
 
     def save(self):
         data = self.cleaned_data
-        submission = Submission(survey=self.survey, participant_email=data["email"])
+        submission = Submission(survey=self.survey)
         submission.save()
         for question in self.survey.question_set.all():
             choice = Answer.objects.get(pk=data[f"question_{question.id}"])
@@ -30,4 +31,11 @@ class SurveyForm(forms.Form):
 class SurveyCreateForm(forms.ModelForm):
     class Meta:
         model = Submission
+        fields = '__all__'
+
+
+
+class RegForm(UserCreationForm):
+    class Meta:
+        model = User
         fields = '__all__'

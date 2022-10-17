@@ -1,14 +1,22 @@
+from django.core.paginator import Paginator
 from django.shortcuts import render, redirect
 
 from django.shortcuts import get_object_or_404
-from django.urls import reverse
 
-from .models import Survey
+
+from .models import Survey, Submission
 from .forms import SurveyForm, SurveyCreateForm
 
 
 def main_page(request):
-    return render(request, "base.html")
+    Surveys = Survey.objects.all().order_by('title')
+    contact_list = Surveys
+    paginator = Paginator(contact_list, 10)
+
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+
+    return render(request, "main_page.html", {'page_obj': page_obj, 'surveys': Surveys})
 
 
 def show_survey(request, id=None):
